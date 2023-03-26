@@ -139,11 +139,23 @@ impl ApiServer {
             None | Some(_) => Err(anyhow!("Invalid private key file")),
         }?;
 
-        ServerConfig::builder()
-            .with_safe_defaults()
+        let versions = &[&rustls::version::TLS13];
+        // ServerConfig::builder()
+        //     .with_safe_defaults()
+        //     .with_no_client_auth()
+        //     .with_single_cert(cert_chain, key)
+        //     .map_err(anyhow::Error::from)
+        let config = rustls::ServerConfig::builder()
+            .with_cipher_suites(rustls::ALL_CIPHER_SUITES)
+            .with_kx_groups(&rustls::ALL_KX_GROUPS)
+            .with_protocol_versions(versions)
+            .unwrap()
             .with_no_client_auth()
             .with_single_cert(cert_chain, key)
-            .map_err(anyhow::Error::from)
+            .unwrap();
+
+        Ok(config)
+
     }
 
     /// Start the HTTP server and serve API requests.
@@ -205,6 +217,10 @@ impl ApiServer {
                     ])
                     .route(web::post().to(http::set_resource)),
                 )
+                .service(web::resource([
+                    kbs_path!("hello"),
+                ])
+                .route(web::get().to(http::get_hello)))
         });
 
         if !self.insecure {

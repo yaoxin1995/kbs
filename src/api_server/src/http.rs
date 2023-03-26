@@ -145,6 +145,18 @@ pub(crate) async fn attest(
     }
 }
 
+/// GET /hello
+pub(crate) async fn get_hello(
+    request: HttpRequest
+) -> HttpResponse {
+
+    let response = "hello world";
+
+    HttpResponse::Ok()
+    .content_type("application/json")
+    .body(serde_json::to_string(&response).unwrap())
+}
+
 /// GET /resource/{repository}/{type}/{tag}
 /// GET /resource/{type}/{tag}
 pub(crate) async fn get_resource(
