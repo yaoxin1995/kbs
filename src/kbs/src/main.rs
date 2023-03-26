@@ -59,7 +59,10 @@ struct Cli {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
+    env_logger::Builder::new()
+    .parse_filters("trace")
+    .init();
 
     let cli = Cli::parse();
     let kbs_config = match cli.config.as_str() {
