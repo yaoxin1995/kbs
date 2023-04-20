@@ -40,6 +40,8 @@ strum_macros = "0.24.1"
 tokio.workspace = true
 tonic = { version = "0.8", optional = true }
 uuid = { version = "1.2.2", features = ["serde", "v4"] }
+openssl = { version = "0.10", features = ["vendored"] }
+ssh-key  = {version = "0.6.0-rc.0", default-features = false, features = ["alloc",  "crypto"]}
 
 [dev-dependencies]
 tempfile.dev-workspace = true
