@@ -5,6 +5,7 @@
 use actix_web::{body::BoxBody, web, HttpRequest, HttpResponse};
 use jwt_simple::prelude::Ed25519PublicKey;
 use kbs_types::{Attestation, Challenge, ErrorInformation, Request};
+use log::info;
 use std::sync::Arc;
 use strum_macros::EnumString;
 use tokio::sync::{Mutex, RwLock};
@@ -17,6 +18,7 @@ use as_types::AttestationResults;
 use kbs_types::Tee;
 
 const ERROR_TYPE_PREFIX: &str = "https://github.com/confidential-containers/kbs/errors/";
+const SIGNING_KEY :&str = "SIGING_KEY";
 
 #[derive(Debug, EnumString)]
 pub enum ErrorInformationType {
@@ -235,9 +237,12 @@ pub(crate) async fn get_resource(
     )
     .await
     {
-        Ok(response) => HttpResponse::Ok()
+        Ok(response) => {
+            info!("response {:?}, len {:?}", response, serde_json::to_string(&response).unwrap().len());
+            HttpResponse::Ok()
             .content_type("application/json")
-            .body(serde_json::to_string(&response).unwrap()),
+            .body(serde_json::to_string(&response).unwrap())
+        },
         Err(e) => internal!(format!("Get Resource failed: {e}")),
     }
 }
@@ -283,6 +288,11 @@ pub(crate) async fn set_resource(
         resource_type: request.match_info().get("type").unwrap().to_string(),
         resource_tag: request.match_info().get("tag").unwrap().to_string(),
     };
+
+    info!("resource registration resource {:?}, resource_type {:?} resource_tag {:?} repository_name {:?}", 
+            data, request.match_info().get("type").unwrap().to_string(), 
+                request.match_info().get("tag").unwrap().to_string(),
+                    request.match_info().get("repository").unwrap_or("default").to_string());
 
     match set_secret_resource(&repository, resource_description, data.as_ref()).await {
         Ok(_) => HttpResponse::Ok().content_type("application/json").body(""),
