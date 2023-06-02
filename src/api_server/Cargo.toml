@@ -37,6 +37,7 @@ rustls-pemfile = { version = "1.0.2", optional = true }
 semver = "1.0.16"
 serde = { version = "1.0", features = ["derive"] }
 serde_json.workspace = true
+serde_derive = { version = "1.0.106", default-features = false}
 strum = "0.24.1"
 strum_macros = "0.24.1"
 tokio.workspace = true
@@ -44,6 +45,8 @@ tonic = { version = "0.8", optional = true }
 uuid = { version = "1.2.2", features = ["serde", "v4"] }
 openssl = { version = "0.10.46", optional = true }
 ssh-key  = {version = "0.6.0-rc.0", default-features = false, features = ["alloc",  "crypto"]}
+base64ct = { version = "1.5.3",  features = ["alloc"]}
+sha2 = { version = "0.10.6", default-features = false,  features = ["force-soft"]}
 
 [dev-dependencies]
 tempfile.workspace = true

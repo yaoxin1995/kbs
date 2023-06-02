@@ -128,35 +128,34 @@ pub(crate) async fn attest(
 
 
 
+    match attestation_service
+        .attest_verifier
+        .lock()
+        .await
+        .attest_verify(
+            session.tee(),
+            session.nonce(),
+            &serde_json::to_string(&attestation).unwrap(),
+        )
+        .await
+    {
+        Ok(results) => {
+            if !results.allow() {
+                log::error!("Evidence verification failed {:?}", results.output());
+                unauthorized!(VerificationFailed, "Attestation failure");
+            }
 
-    // match attestation_service
-    //     .attest_verifier
-    //     .lock()
-    //     .await
-    //     .attest_verify(
-    //         session.tee(),
-    //         session.nonce(),
-    //         &serde_json::to_string(&attestation).unwrap(),
-    //     )
-    //     .await
-    // {
-    //     Ok(results) => {
-    //         if !results.allow() {
-    //             log::error!("Evidence verification failed {:?}", results.output());
-    //             unauthorized!(VerificationFailed, "Attestation failure");
-    //         }
-
-    //         session.set_tee_public_key(attestation.tee_pubkey.clone());
-    //         session.set_attestation_results(results);
-    //         HttpResponse::Ok().cookie(session.cookie()).finish()
-    //     }
-    //     Err(err) => internal!(format!("{err}")),
-    // }
+            session.set_tee_public_key(attestation.tee_pubkey.clone());
+            session.set_attestation_results(results);
+            return HttpResponse::Ok().cookie(session.cookie()).finish();
+        }
+        Err(err) => internal!(format!("{err}")),
+    }
     
-    let results = AttestationResults::new(Tee::Snp, true, None, None, None);
-    session.set_tee_public_key(attestation.tee_pubkey.clone());
-    session.set_attestation_results(results);
-    HttpResponse::Ok().cookie(session.cookie()).finish()
+    // let results = AttestationResults::new(Tee::Snp, true, None, None, None);
+    // session.set_tee_public_key(attestation.tee_pubkey.clone());
+    // session.set_attestation_results(results);
+    // HttpResponse::Ok().cookie(session.cookie()).finish()
 }
 
 /// GET /hello

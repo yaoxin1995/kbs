@@ -4,7 +4,7 @@
 mkdir -p resource
 mkdir -p /opt/confidential-containers/kbs/repository/quark_mongo
 
-pushd mogo_secret
+pushd nginx_secret
 
 for filename in *; do
 
