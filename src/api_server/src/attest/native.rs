@@ -273,6 +273,7 @@ async fn quark_vrifier(attesstation: Attestation, nonce: &str) -> bool {
     if user_data_string.eq(&ref_user_data) {
         return true;
     } else {
+        log::error!("application launch measurement doesn't match the reference value");
         return false;
     }
 
