@@ -267,10 +267,14 @@ async fn quark_vrifier(attesstation: Attestation, nonce: &str) -> bool {
         attesstation.tee_pubkey.k_mod.clone().into_bytes(),
         attesstation.tee_pubkey.k_exp.clone().into_bytes(),
     ];
+
+
     
     let ref_user_data = hash_chunks(ref_ehd_chunks);
 
     if user_data_string.eq(&ref_user_data) {
+
+        log::error!("Authentication in production mode, the hash in the report's custom field matches the hash of (nonce, enclave_startup_measurement, and tee public key) generated in sm");
         return true;
     } else {
         log::error!("application launch measurement doesn't match the reference value");
